@@ -1,9 +1,72 @@
-# fedora-network-configuration
-Documentation For Fedora Server Network Configuration and Services (Chapter 5)
+Installation of Fedora Server on VirtualBox
+Requirements
+
+VirtualBox installed on the host machine
+
+Fedora Server ISO file (downloaded from the official Fedora website)
+
+At least 2 GB RAM and 20 GB storage allocated to the VM
+
+Steps
+
+Create a new VM in VirtualBox
+
+Name: FedoraServer
+
+Type: Linux
+
+Version: Fedora (64-bit)
+
+Memory: 2048 MB (minimum)
+
+Hard disk: 20 GB (VDI, dynamically allocated)
+
+Attach Fedora Server ISO
+
+Go to Settings → Storage → Controller: IDE → Add Optical Drive
+
+Choose the Fedora Server ISO file
+
+Boot and begin installation
+
+Start the VM
+
+Select Install Fedora Server
+
+Installation process
+
+Choose language and keyboard
+
+Configure disk → select automatic partitioning
+
+Set root password
+
+Create a user (optional)
+
+Click Begin Installation and wait until it completes
+
+Reboot into Fedora Server
+
+After installation, remove the ISO from VirtualBox storage settings
+
+Reboot and log in as root (or the user you created)
+
+Verify installation
+
+uname -r
+cat /etc/fedora-release
+
+
+At this point, Fedora Server is installed and ready for Chapter 5 configurations.
+
 1. Configuring Network Interfaces and Settings
 Checking current network settings
 nmcli connection show
 ip addr show
+
+Example static IP configuration
+
+File: /etc/sysconfig/network-scripts/ifcfg-enp0s3
 
 TYPE=Ethernet
 BOOTPROTO=static
@@ -29,6 +92,7 @@ Install the DHCP server package:
 
 sudo dnf install dhcp-server -y
 
+
 Configuration file: /etc/dhcp/dhcpd.conf
 
 subnet 192.168.1.0 netmask 255.255.255.0 {
@@ -38,9 +102,11 @@ subnet 192.168.1.0 netmask 255.255.255.0 {
     option domain-name-servers 8.8.8.8, 8.8.4.4;
 }
 
+
 Start and enable the service:
 
 sudo systemctl enable --now dhcpd
+
 
 Open firewall for DHCP:
 
@@ -52,6 +118,8 @@ sudo firewall-cmd --reload
 Install BIND:
 
 sudo dnf install bind bind-utils -y
+
+
 Configuration file: /etc/named.conf
 
 options {
@@ -59,7 +127,9 @@ options {
     allow-query { 192.168.1.0/24; };
 };
 
+
 Add a zone:
+
 zone "example.com" {
     type master;
     file "/var/named/example.com.zone";
@@ -79,14 +149,17 @@ $TTL 86400
 @   IN  A   192.168.1.1
 www IN  A   192.168.1.2
 
+
 Check configuration:
 
 sudo named-checkconf /etc/named.conf
 sudo named-checkzone example.com /var/named/example.com.zone
 
+
 Start and enable BIND:
 
 sudo systemctl enable --now named
+
 
 Allow DNS through firewall:
 
@@ -104,15 +177,18 @@ Install NTP:
 
 sudo dnf install ntp -y
 
+
 Configuration file: /etc/ntp.conf
 
 server 0.fedora.pool.ntp.org iburst
 server 1.fedora.pool.ntp.org iburst
 driftfile /var/lib/ntp/ntp.drift
 
+
 Start and enable service:
 
 sudo systemctl enable --now ntpd
+
 
 Check service status and peers:
 
@@ -120,6 +196,6 @@ systemctl status ntpd
 ntpq -p
 
 
-NTP for accurate time synchronization
 
-These services are the backbone of a networked environment. Setting them up on Fedora Server gave me practical experience in system administration and managing core infrastructure.
+Leave Commit directly to
+Click the green Commit changes button.
