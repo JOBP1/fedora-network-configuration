@@ -195,7 +195,3 @@ Check service status and peers:
 systemctl status ntpd
 ntpq -p
 
-
-
-Leave Commit directly to
-Click the green Commit changes button.
