@@ -1,7 +1,7 @@
 Installation of Fedora Server on VirtualBox
-Requirements
+The Requirements
 
-VirtualBox installed on the host machine
+VirtualBox installed on the machine
 
 Fedora Server ISO file (downloaded from the official Fedora website)
 
@@ -9,7 +9,7 @@ At least 2 GB RAM and 20 GB storage allocated to the VM
 
 Steps
 
-Create a new VM in VirtualBox
+Created a new VM in VirtualBox
 
 Name: FedoraServer
 
@@ -21,50 +21,46 @@ Memory: 2048 MB (minimum)
 
 Hard disk: 20 GB (VDI, dynamically allocated)
 
-Attach Fedora Server ISO
+Attached Fedora Server ISO
 
-Go to Settings → Storage → Controller: IDE → Add Optical Drive
+I Configured Settings → Storage → Controller: IDE → Add Optical Drive
 
-Choose the Fedora Server ISO file
+I Choose the Fedora Server ISO file
 
-Boot and begin installation
+I Started Boot and begun installation
 
-Start the VM
+Started the VM
 
-Select Install Fedora Server
+Selected Install Fedora Server
 
-Installation process
+Installation process begun with
 
-Choose language and keyboard
+Choosing language and keyboard
 
-Configure disk → select automatic partitioning
+Configured the disk → selected automatic partitioning
 
-Set root password
+I Set root password
 
-Create a user (optional)
+Created a user 
 
-Click Begin Installation and wait until it completes
+The Server Begun Installation and I waited until it completed
 
-Reboot into Fedora Server
+Proceeded To Reboot into Fedora Server
 
-After installation, remove the ISO from VirtualBox storage settings
+After installation, I removed the ISO from VirtualBox storage settings
 
-Reboot and log in as root (or the user you created)
+I Finally Rebooted and logged in as the root user I created
 
-Verify installation
+Then Verified installation and Installed The KDE-desktop environment
 
-uname -r
-cat /etc/fedora-release
-
-
-At this point, Fedora Server is installed and ready for Chapter 5 configurations.
+At this point, Fedora Server was installed and ready for Chapter 5 configurations.
 
 1. Configuring Network Interfaces and Settings
 Checking current network settings
 nmcli connection show
 ip addr show
 
-Example static IP configuration
+static IP configuration
 
 File: /etc/sysconfig/network-scripts/ifcfg-enp0s3
 
@@ -77,7 +73,7 @@ DNS1=8.8.8.8
 ONBOOT=yes
 
 
-Restart the network service:
+Restarted the network service:
 
 sudo systemctl restart NetworkManager
 
@@ -88,7 +84,7 @@ nmcli connection up "MyConnection"
 
 2. DHCP Server Configuration
 
-Install the DHCP server package:
+Installed the DHCP server package:
 
 sudo dnf install dhcp-server -y
 
@@ -103,7 +99,7 @@ subnet 192.168.1.0 netmask 255.255.255.0 {
 }
 
 
-Start and enable the service:
+Started and enabled the service:
 
 sudo systemctl enable --now dhcpd
 
@@ -115,7 +111,7 @@ sudo firewall-cmd --reload
 
 3. DNS Server Setup (BIND)
 
-Install BIND:
+Installation of BIND:
 
 sudo dnf install bind bind-utils -y
 
@@ -130,9 +126,9 @@ options {
 
 Add a zone:
 
-zone "example.com" {
+zone "labnetwork.com" {
     type master;
-    file "/var/named/example.com.zone";
+    file "/var/lanetwork.com.zone";
 };
 
 
@@ -145,16 +141,17 @@ $TTL 86400
         1800       ; Retry
         604800     ; Expire
         86400 )    ; Minimum TTL
-@   IN  NS  ns1.example.com.
+@   IN  NS  ns1.labnetwork.com.
 @   IN  A   192.168.1.1
 www IN  A   192.168.1.2
+mail IN A   192.168.1.30
 
 
 Check configuration:
 
 sudo named-checkconf /etc/named.conf
-sudo named-checkzone example.com /var/named/example.com.zone
-
+sudo named-checkzone labnetwork.com /var/named/example.com.zone
+labnetwork.com.zone
 
 Start and enable BIND:
 
@@ -169,7 +166,9 @@ sudo firewall-cmd --reload
 
 Test DNS with:
 
-dig example.com
+dig labnetwork.com
+dig www.labnetwork.com
+dig mail.labnetwork.com
 
 4. Network Time Protocol (NTP)
 
