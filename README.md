@@ -192,6 +192,7 @@ sudo systemctl enable --now ntpd
 Check service status and peers:
 
 systemctl status ntpd
+ntpq -p
 
 5. Network Troubleshooting
 
@@ -200,5 +201,6 @@ This was done so as to use some of basic Linux network diagnostic tools to verif
 Checking Hostname and System Identity
 
 
-ntpq -p
+
+
 
