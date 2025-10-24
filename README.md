@@ -199,7 +199,27 @@ ntpq -p
 This was done so as to use some of basic Linux network diagnostic tools to verify network status and confirm whether services are running correctly.
 
 Checking Hostname and System Identity
+hostnamectl
 
+Testing Local and External Connectivity
+ping 127.0.0.1
+ping 192.168.1.1
+ping google.com
+
+Viewing Active Network Sockets
+ss -tulnp
+
+Checking Running Services
+systemctl status network
+systemctl status named
+systemctl status dhcpd
+systemctl status ntpd
+
+DNS Resolution Test
+dig labnetwork.com
+
+Looking for Errors in Logs
+journalctl -xe
 
 
 
