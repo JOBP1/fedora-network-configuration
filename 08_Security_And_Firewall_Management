@@ -1,0 +1,91 @@
+"The objective of tis lab was to implement basic firewall rules with zones, services, ports, and masquerading. Then Install and configure Suricata IDS/IPS to monitor and block threats.
+1. Implementing Firewall Rules with firewalld
+
+sudo systemctl status firewalld
+"Checked if the firewall was actively running pf which its state was enabled and actively running"
+
+2.Listed all the available Zones
+sudo firewall-cmd --get-zones
+"I found zones like public, trusted, work, and home.I decided to use the public zone for safety and clarity".
+
+3.Setting up the Default Zones
+sudo firewall-cmd --set-default-zone=public
+
+4.Opened the HTTP Service
+sudo firewall-cmd --zone=public --add-service=http --permanent
+"After adding the HTTP service, I confirmed the port 80 was open. This allowed web traffic to reach any local web server I might run, similar to testing Apache in the previous lab".
+
+5.Setting Custom Port
+sudo firewall-cmd --zone=public --add-port=8080/tcp --permanent
+"I opened port 8080 for testing">
+
+6.Masquerade
+sudo firewall-cmd --zone=public --add-masquerade --permanent
+"I enabled masquerading for NAT testing. I learnt that this is useful when the server acts as a gateway for internal networks, allowing client IPs to appear as the server IP externally".
+
+7.Installing Suricata
+sudo dnf install suricata
+"For a reason when running this command I found that Suricata was already installed so a pop up prompted that there was nothing to do".
+
+8. ConfigurING Suricata
+sudo nano /etc/suricata/suricata.yaml
+"I edited the config file on the text editor to monitor my main network interface (enp0s3) and set the log path to /var/log/suricata/fast.log".
+
+9.Updating Suricata Rules
+sudo suricata-update
+"This was successfull".
+
+10.Starting and Enabling Suricata
+sudo systemctl start suricata
+sudo systemctl enable suricata
+
+11. Monitoring Alerts
+cat /var/log/suricata/fast.log
+"This command displayed a collection of logs I saw alerts for unusual traffic, demonstrating that Suricata was actively monitoring my network".
+
+12.Installing OpenVPN
+sudo dnf install openvpn
+
+13.Configuring the Server
+sudo mkdir /etc/openvpn/server
+sudo cp /usr/share/doc/openvpn/sample/sample-config-files/server.conf /etc/openvpn/server/
+
+14.Generating Keys and Certificate
+cd /etc/openvpn/server
+sudo openssl dhparam -out dh.pem 2048
+sudo openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -keyout ca.key -out ca.crt
+sudo openssl req -new -newkey rsa:2048 -days 365 -nodes -keyout server.key -out server.crt
+
+15.Enabled IP Forwarding
+sudo nano /etc/sysctl.conf
+# net.ipv4.ip_forward = 1
+sudo sysctl -p
+"This allowed the server to forward packets from VPN clients to the internet".
+
+16. Configured NAT
+sudo nano /etc/firewalld/nat.conf
+"This opened up a ttext editor and I made the following changes"
+        *nat
+        :POSTROUTING ACCEPT[0:0]
+        -A POST_public_allow -o etho -j MASQUERADE
+        COMMIT
+"I Saved and exited the text editor".
+"This enabled NAT so that VPN clients could access external networks".
+
+17.Started and Enabled OpenVPN
+sudo systemctl start openvpn-server@server
+sudo systemctl start openvpn-server@server
+"VPN server started successfully.I verified its status using 'sudo systemctl status openvpn@srverto ensure service is active.
+"Using 'sudo systemctl start openvpn@server would result to an error - Failed to start openvpn@server.service: unit openvpn@server.service not found".
+"The correct command that worked was 'sudo systemctl start openvpn-server@server".
+
+18.Allowed OpenVPN Port using Firewall
+sudo firewall-cmd --permanent --add-port=1194/udp
+sudo firewall-cmd --reload
+"Opened UDP port 1194 for VPN traffic. Without this, clients could not connect".
+
+19.Generated The Client Configurations
+sudo /usr/share/openvpn/easy-rsa/3/easyrsa gen-req clientname
+sudo /usr/share/openvpn/easy-rsa/3/easyrsa sign-req client clientname
+"These command created the client certificates and keys".
+"I securely transferred clientname.crt, clientname.key, and ca.crt from the server to the client using scp. On the client, I installed OpenVPN and created a clientname.ovpn file that referenced these certificates. I placed the certificate contents inside the .ovpn file under <ca>, <cert>, and <key> sections. After saving the configuration, I started the VPN using the OpenVPN client and confirmed the connection by checking the assigned VPN IP and successfully pinging the server.
