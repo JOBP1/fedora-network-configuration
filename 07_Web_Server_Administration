@@ -1,0 +1,106 @@
+1.Installing and Configuring Apache HTTP Server.
+"I had to make sure that everything was up to date by running the command below"
+sudo dnf update
+sudo df install httpd
+
+2.Start and Enable Apache
+sudo systemctl start httpd
+sudo systemctl enable httpd
+
+3.Configure Firewall
+sudo firewall-cmd --add-service=http --permanent
+sudo firewall-cmd --reload
+
+4.Verify Installation
+http://your-server-ip
+You should see the Apache test page.
+
+5.Apache Configuration
+sudo mkdir -p /var/www/html/mywebsite
+sudo chown -R apache:apache /var/www/html/mywebsite
+
+6.Virtual Hosting and Site Configuration
+Virtual hosts allow multiple websites to run on the same server.
+sudo mkdir -p /var/www/html/example1
+sudo mkdir -p /var/www/html/example2
+
+7.Create Virtual Host Files
+<VirtualHost *:80>
+    ServerAdmin webmaster@example1.com
+    DocumentRoot /var/www/html/example1
+    ServerName example1.com
+    ServerAlias www.example1.com
+    ErrorLog /var/log/httpd/example1-error.log
+    CustomLog /var/log/httpd/example1-access.log combined
+</VirtualHost>
+
+<VirtualHost *:80>
+    ServerAdmin webmaster@example2.com
+    DocumentRoot /var/www/html/example2
+    ServerName example2.com
+    ServerAlias www.example2.com
+    ErrorLog /var/log/httpd/example2-error.log
+    CustomLog /var/log/httpd/example2-access.log combined
+</VirtualHost>
+
+Save them inside /etc/httpd/conf.d/.
+
+8.Permissions
+sudo chown -R apache:apache /var/www/html/example1
+sudo chown -R apache:apache /var/www/html/example2
+
+9.Test Configuration and Restart Apache
+sudo apachectl configtest
+sudo systemctl restart httpd
+
+10.Securing the Web Server with SSL/TLS
+Install SSL Tools
+sudo dnf install httpd mod_ssl certbot python3-certbot-apache
+
+Obtain SSL Certificates
+sudo certbot --apache -d example.com -d www.example.com
+
+11.Test HTTPS
+Visit:
+https://example.com
+
+12.Enable HTTPS Through Firewall
+sudo firewall-cmd --permanent --add-service=https
+sudo firewall-cmd --reload
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
