@@ -90,16 +90,26 @@ sudo chmod 777 /srv/centora     "Learnt that the 777 meant giving file permissio
 7.Start and Enable NFS
 sudo systemctl enable --now nfs-server
 sudo exportfs -r
-"NFS service was actively running and enabled based on th command 'sudo systemctl status nfs-server' ."
+"NFS service was actively running and enabled based on the command 'sudo systemctl status nfs-server' ."
 
-Starting and enabling the service was a success
+"Starting and enabling the service was a success".
 
-8.Install vsftpd
-sudo dnf install vsftpd -y
-sudo systemctl enable --now vsftpd
+8.IOpening Firewall Ports
+"Since NFS uses some default ports such as 11(rpcbind) and 2049(NFS), I had to access these ports by using the below commands on the terminal".
+sudo firewall-cmd --permanent --xone=public --add-service=nfs      "Learnt that it opens all required ports for NFSv3 and NFSv4 file sharing".
+sudo firewall-cmd --permanent --xone=public --add-service=mountd      "Learnt that it handles mount requests from clients."
+sudo firewall-cmd --permanent --xone=public --add-service=rpc-bind      "Learnt that this opens the ports for rpcbind, which maps NFS services to dynamic ports".
+
 sudo firewall-cmd --add-service=ftp --permanent
 sudo firewall-cmd --reload
-The enabling service was a success
+"The enabling service was a success"
+
+Export the NFS Shares
+sudo exportfs -arv
+"Exported successfully".
+
+Set Appropriate Permissions
+sudo chmod -R 755 /centora      "Learnt that this changed permissions on my folder /centora including everything inside it — because of the -R (recursive) option, meaning that the file was readable and accessible to all other users but I as the owner had therights to write".
 
 9.Testing File Sharing
 \\192.168.1.100\ShareName
