@@ -1,72 +1,80 @@
+"The main objextive of this lab was to successfully setup and manage an Apache HTTP Server on Fedora
 1.Installing and Configuring Apache HTTP Server.
 "I had to make sure that everything was up to date by running the command below"
 sudo dnf update
 sudo df install httpd
 
-2.Start and Enable Apache
+"This command allowed Fedora to install Apache and any required dependencies of which was a success".
+
+2.Starting and Enabling Apache
+"I started the service and enabled it so that Apache automatically boots on system startup, I then confirmed if the service was actively running using 'sudo systemctl status httpd' of which it displayed that the service status was actively running and enabled".
 sudo systemctl start httpd
 sudo systemctl enable httpd
 
-3.Configure Firewall
+3.Configuring the Firewall
 sudo firewall-cmd --add-service=http --permanent
 sudo firewall-cmd --reload
+"At this step, I realized Apache wouldn’t be accessible externally unless I allowed HTTP traffic. After reloading firewalld, I confirmed the rule was active."
 
-4.Verify Installation
-http://your-server-ip
-You should see the Apache test page.
+4.Verifying the Installation
+"I visited http://192.168.1.100 (which is my server's IP) in the Google Chrome browser using the http and confirmed the Apache test page appeared. This was the first sign that the setup was working.
 
 5.Apache Configuration
+"On my PC the Apache’s configuration files were located in /etc/httpd. I identified the main config file and the conf.d folder where virtual hosts are placed."
 sudo mkdir -p /var/www/html/mywebsite
 sudo chown -R apache:apache /var/www/html/mywebsite
 
 6.Virtual Hosting and Site Configuration
-Virtual hosts allow multiple websites to run on the same server.
-sudo mkdir -p /var/www/html/example1
-sudo mkdir -p /var/www/html/example2
+"For my site configuration I used mycoolsite and the domain mycoolsite.com leading me to create the directory and changing ownership so Apache could serve files without permission errors".
+sudo mkdir -p /var/www/html/mycoolsite
+sudo mkdir -p /var/www/html/mycoolsite2
 
 7.Create Virtual Host Files
 <VirtualHost *:80>
-    ServerAdmin webmaster@example1.com
-    DocumentRoot /var/www/html/example1
-    ServerName example1.com
-    ServerAlias www.example1.com
-    ErrorLog /var/log/httpd/example1-error.log
-    CustomLog /var/log/httpd/example1-access.log combined
+    ServerAdmin webmaster@emycoolsite.com
+    DocumentRoot /var/www/html/mycoolsite
+    ServerName mycoolsite.com
+    ServerAlias www.mycoolsite.com
+    ErrorLog /var/log/httpd/mycoolsite-error.log
+    CustomLog /var/log/httpd/mycoolsite-access.log combined
 </VirtualHost>
 
 <VirtualHost *:80>
-    ServerAdmin webmaster@example2.com
-    DocumentRoot /var/www/html/example2
-    ServerName example2.com
-    ServerAlias www.example2.com
-    ErrorLog /var/log/httpd/example2-error.log
-    CustomLog /var/log/httpd/example2-access.log combined
+    ServerAdmin webmaster@mycoolsite2.com
+    DocumentRoot /var/www/html/mycoolsite2
+    ServerName mycoolsite2.com
+    ServerAlias www.mycoolsite2.com
+    ErrorLog /var/log/httpd/mycoolsite2-error.log
+    CustomLog /var/log/httpd/mycoolsite2-access.log combined
 </VirtualHost>
 
-Save them inside /etc/httpd/conf.d/.
+"I proceeded to save them inside /etc/httpd/conf.d/. directory".
 
 8.Permissions
-sudo chown -R apache:apache /var/www/html/example1
-sudo chown -R apache:apache /var/www/html/example2
+sudo chown -R apache:apache /var/www/html/mycoolsite
+sudo chown -R apache:apache /var/www/html/mycoolsite2
 
 9.Test Configuration and Restart Apache
 sudo apachectl configtest
 sudo systemctl restart httpd
+"After running these commands configtest returned Syntax OK, which confirmed that my virtual host files was correct. Restarting Apache applied all changes, and I was able to load both website directories locally".
 
 10.Securing the Web Server with SSL/TLS
-Install SSL Tools
+"I began with installing the SSL Tools which installed and updated he repositories successfully".
 sudo dnf install httpd mod_ssl certbot python3-certbot-apache
 
-Obtain SSL Certificates
+11. Obtain SSL Certificates
 sudo certbot --apache -d example.com -d www.example.com
 
-11.Test HTTPS
-Visit:
-https://example.com
+"In this step, I followed Certbot prompts, entered my email, and successfully generated certificates. Certbot auto-configured the HTTPS virtual host"'
 
-12.Enable HTTPS Through Firewall
+11.Test HTTPS
+"I then accessed https://mycoolsite.com and confirmed that the site was still not accessible I think that the certifications had not gone through because tthere was an error prompt when generating the certifications I needed paid certifications to actively access the website".
+
+12.Enabled HTTPS Through Firewall
 sudo firewall-cmd --permanent --add-service=https
 sudo firewall-cmd --reload
+
 
 
 
