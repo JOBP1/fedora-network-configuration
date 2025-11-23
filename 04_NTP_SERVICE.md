@@ -31,3 +31,12 @@ systemctl status ntpd
 
 ntpq -p
 "Using the command 'ntpq -p' would often result to a Request time out not sure why".
+
+Verifying Time Synchronization
+"Essential to show if the server would display the current time ".
+
+sudo ntpdate -q
+"The server displayed the current time with a (+0300)
+
+
+
