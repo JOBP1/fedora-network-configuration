@@ -94,7 +94,7 @@ sudo exportfs -r
 
 "Starting and enabling the service was a success".
 
-8.IOpening Firewall Ports
+8.Opening Firewall Ports
 "Since NFS uses some default ports such as 11(rpcbind) and 2049(NFS), I had to access these ports by using the below commands on the terminal".
 sudo firewall-cmd --permanent --xone=public --add-service=nfs      "Learnt that it opens all required ports for NFSv3 and NFSv4 file sharing".
 sudo firewall-cmd --permanent --xone=public --add-service=mountd      "Learnt that it handles mount requests from clients."
@@ -111,8 +111,26 @@ sudo exportfs -arv
 Set Appropriate Permissions
 sudo chmod -R 755 /centora      "Learnt that this changed permissions on my folder /centora including everything inside it — because of the -R (recursive) option, meaning that the file was readable and accessible to all other users but I as the owner had therights to write".
 
-9.Testing File Sharing
-\\192.168.1.100\ShareName
-sudo mount 192.168.1.100:/srv/share /mnt
+9. Installing THe FTP Servers
+"This would allow me to transfer files from my server to a network".
+"For an FTP Servers I went with the most common and the one highlighted in the lecture notes which was vsftpd (Very Secure FTP Daemon) "
+sudo dnf install vsftpd
 
-In this lab, I configured file sharing services (Samba, NFS, FTP) to allow multiple devices on the network to access shared directories and printers. Each service wass configured for basic access and tested for connectivity.
+"The update and repositories were intalled successfully, leaving me with the task of starting and enabling the service".
+sudo dnf start vsftpd
+sudo dnf enable vsftpd
+
+"To check if the service was actively running and enabled I used 'sudo dnf status vsftpd' which resulted in showing that the service wa up and actively running".
+"Next task wat to configure the /etc/vsftpd/vsftpd.conf file add make some slight changes".
+
+10. Configuring FTP Server
+sudo nano /etc/vsftpd/vsftpd.conf
+"This opened up the text editor and I made the following changes".
+            anonymous_enable=YES
+            local_enable=YES
+            listen=NO
+            local_umask=022
+            listen_ipv6=YES
+
+11. Firewall Configuration
+"I had already enabled firewalld for the ftp service and the status was actively running".
