@@ -1,0 +1,105 @@
+"The goal of this lab was to familiarize with Networkmonitoring tools like Zabbix and Nagios to monitor the health and the performance of the network, servers and the devices".
+1.Installing & Configuring Nagios
+sudo dnf install nagios
+
+Installing Nagios Plugins
+sudo dnf install nagios-plugins-all
+
+2.Start Nagios
+sudo systemctl start nagios
+"Afterstarting it, I checked the status using 'sudo systemctl status nagios' to confirm it was running without errors".
+
+3.Enabling Nagios
+sudo systemctl enable nagios
+
+4.Accessing the Web Interface"I Accessed my Chrome browser and  searhed http://192.168.1.100/nagios
+"I logged in using the “nagiosadmin” account created during installation. I saw host and service status pages, confirming Nagios was working".
+
+5. Nagios Configuration
+"I edited files using /etc/nagios/ whereby I added hosts from my VM and Fedora so Nagios could monitor ping, CPU, and HTTP services".
+
+6.Installing & Configuring Zabbix
+# sudo dnf install https://repo.zabbix.com/zabbix/5.4/rhel/8/x86_64/zabbix-release-5.4
+"I added the official Zabbix repo so I could install the server this redirected me to Maria DB"
+        a. Logged Into MariaDB
+          mysql -u root -p
+          "logged in as the root database administrator. MariaDB prompted me for the root password, which I had set earlier during installation".
+        b.Created the Zabbix Database
+          "Inside MariaDB, I ran:
+          CREATE DATABASE zabbix CHARACTER SET utf8 COLLATE utf8_bin;
+        c. Created a Database User for Zabbix
+          CREATE USER 'zabbix'@'localhost' IDENTIFIED BY 'your_password';
+          "I created a dedicated user named zabbix and assigned it a strong password".
+        d. Granted Permissions to the User
+           GRANT ALL PRIVILEGES ON zabbix.* TO 'zabbix'@'localhost';
+          "Then exited the Maria DB".
+        e. Imported the Zabbix Database Schema
+           zcat /usr/share/doc/zabbix-server-mysql*/create.sql.gz | mysql -u zabbix -p zabbix
+           "I logged in using the zabbix user created earlier, this process took a little time because it imported hundreds of tables used by Zabbix".
+        f. Updated the Zabbix Server Configuration
+           sudo nano /etc/zabbix/zabbix_server.conf
+        g. Started the Services
+           sudo systemctl start zabbix-server zabbix-agent httpd
+           sudo systemctl enable zabbix-server zabbix-agent httpd
+           "Zabbix frontend became accessible"
+        h. Accessed the Web Interface
+           http://192.168.1.100/zabbix
+           "I proceeded to Log in using the default username 'Admin' and password 'zabbix'
+           "The dashboard showed no hosts yet, so I added my Fedora server through the Zabbix agent".
+
+7.System & Network Performance Tuning
+"To monitor the performance I tried the top and htop commands that showed CPU spikes from Zabbix".
+
+8.Adjusting the Swappiness
+sudo nano /etc/sysctl.conf
+vm.swappiness = 10
+sudo sysctl -p
+
+9.Enabled the SSD Trim
+sudo systemctl enable fstrim.timer
+sudo systemctl start fstrim.timer
+"On this configuration nothing happened so I run the command 'sudo systemctl status fstrim.timer' the service was enabled but the state wasn't running it was at waiting, I did some troubleshooting and some research that pointed to it being normal".
+
+10.Tuning the TCP/IP
+sudo nano /etc/security/limits.conf
+"This opened up the GNU nano 8.3 text editor where I added the lines below"
+* soft nofile 65535
+* hard nofile 65535
+
+11. Troubleshooting Common Networking Issues
+nmcli "This displayed my connection which was enp0s3, lo and the DNS Configurations".
+ip a "This displayed my inet addresses of the lo (loopback) and enp0s3
+ping -c 4 8.8.8.8 "Return ping packets with 0% loss".
+
+
+
+
+
+
+
+ 
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
